@@ -1,0 +1,35 @@
+﻿<Window x:Class="Ink_Canvas.WelcomeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Ink_Canvas" xmlns:ui="http://schemas.modernwpf.com/2019"
+        mc:Ignorable="d" Topmost="True" ResizeMode="NoResize" ui:WindowHelper.UseModernWindowStyle="True"
+        WindowStartupLocation="CenterScreen" FontFamily="Microsoft YaHei UI" 
+        Title="欢迎" Height="250" Width="400">
+    <Grid Height="234" VerticalAlignment="Bottom" Margin="0,0,0,1">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Label Content="欢迎使用 PowerCanvas 画板！" FontSize="18" Margin="10,20,0,144" Grid.RowSpan="2"/>
+        <ui:SimpleStackPanel Grid.Row="1" Margin="10,5,170,0">
+
+            <TextBlock  FontSize="15" Margin="0,17,0,-7" TextWrapping = "Wrap">   一款针对触屏PowerPoint软件的优化工具
+            </TextBlock>
+
+            <TextBlock  FontSize="15" Margin="0,17,0,-7" TextWrapping = "Wrap">   当前版本为：1.1开发版
+            </TextBlock>
+
+
+            <TextBlock  FontSize="15" Margin="0,17,0,-7" TextWrapping = "Wrap">
+            </TextBlock>
+            <TextBlock  FontSize="10" Margin="0,17,0,-7" TextWrapping = "Wrap">   二次开发者：WeiWenzhao
+            </TextBlock>
+
+        </ui:SimpleStackPanel>
+        <Button Grid.Row="2" FontFamily="Microsoft YaHei UI" Name="OKButton"
+                HorizontalAlignment="Center" Content="确定" Width="100" Click="Button_Click"/>
+    </Grid>
+</Window>

@@ -1,0 +1,462 @@
+<Window Name="window" x:Class="Ink_Canvas.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Ink_Canvas"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:c="clr-namespace:Ink_Canvas.Converter"
+        mc:Ignorable="d"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        WindowState="Maximized"
+        Loaded="Window_Loaded"
+        Background="Transparent"
+        ShowInTaskbar="False"
+        Title="Ink Canvas 画板"
+        Topmost="True"
+       
+         PreviewKeyDown="Main_Grid_PreviewKeyDown"
+        Height="1000" Width="1000"
+        FontFamily="Microsoft YaHei UI"
+        Foreground="Black"
+        Stylus.IsPressAndHoldEnabled="False">
+    <!--资源中添加命令-->
+    <Window.Resources>
+        <c:VisibilityConverter x:Key="VisibilityConverter"/>
+        <c:IsEnabledToOpacityConverter x:Key="IsEnabledToOpacityConverter"/>
+        <RoutedUICommand x:Key="KeyExit" Text=" "/>
+        <RoutedUICommand x:Key="back_HotKey_Command" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_Capture" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_Hide" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_ChangeToDrawTool" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_ChangeToSelect" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_ChangeToEraser" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_ChangeToPen1" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_ChangeToPen2" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_ChangeToPen3" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_ChangeToPen4" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_ChangeToPen5" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_DrawLine" Text=" "/>
+    </Window.Resources>
+    <!--输入命令绑定-->
+    <!--命令执行方法绑定-->
+    <Grid x:Name="Main_Grid" Background="#01FFFFFF">
+        <Grid Name="GridBackgroundCoverHolder">
+            <Grid Name="GridBackgroundCover" Visibility="Collapsed" Background="#1F1F1F"/>
+        </Grid>
+        <Canvas Name="Canvas"/>
+        <Label Name="Label" Visibility="Collapsed" Foreground="Gray" Content="0"/>
+        <InkCanvas x:Name="inkCanvas" Background="Transparent" Cursor="Pen" ForceCursor="False"
+                   TouchDown="Main_Grid_TouchDown"
+               
+                   ManipulationCompleted="Main_Grid_ManipulationCompleted"
+                   ManipulationInertiaStarting="inkCanvas_ManipulationInertiaStarting"
+                   IsManipulationEnabled="True"
+                   EditingModeChanged="inkCanvas_EditingModeChanged"
+                   PreviewTouchDown="inkCanvas_PreviewTouchDown"
+                   PreviewTouchUp="inkCanvas_PreviewTouchUp"
+             
+                   ManipulationStarting="inkCanvas_ManipulationStarting"
+  
+  
+                   >
+
+        </InkCanvas>
+
+        <Grid Visibility="Collapsed">
+            <Grid Visibility="{Binding ElementName=GridBackgroundCoverHolder, Path=Visibility}">
+                <Viewbox Margin="10" Height="50" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                    <ui:SimpleStackPanel Orientation="Horizontal" Spacing="5">
+                        <Border Width="36" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                            <Grid Margin="6" MouseUp="GridPPTControlPrevious_MouseUp">
+                                <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
+                            </Grid>
+                        </Border>
+                        <Border Visibility="{Binding ElementName=PptNavigationBtn, Path=Visibility}" Width="36" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                            <Grid MouseUp="PPTNavigationBtn_Click">
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding ElementName=PptNavigationTextBlock, Path=Foreground}" FontSize="{Binding ElementName=PptNavigationTextBlock, Path=FontSize}" Text="{Binding ElementName=PptNavigationTextBlock, Path=Text}" />
+                            </Grid>
+                        </Border>
+                        <Border Width="36" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                            <Grid Margin="6" MouseUp="GridPPTControlNext_MouseUp">
+                                <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalNextSlideNormal}"/>
+                            </Grid>
+                        </Border>
+                    </ui:SimpleStackPanel>
+                </Viewbox>
+            </Grid>
+        </Grid>
+
+        <Grid Name="GridNotifications" Margin="0,110" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+            <Border CornerRadius="25" Height="50" Background="LightGray" Opacity="0.85">
+                <TextBlock Name="TextBlockNotice" Text="测试文本" Margin="20,0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
+            </Border>
+        </Grid>
+
+        <Viewbox Name="ViewBoxStackPanelMain" Visibility="Visible" Margin="10,10,10,55" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="46">
+            <StackPanel Name="StackPanelMain" Width="46">
+                <StackPanel Name="StackPanelControl">
+                    <TextBlock Text="自动&#x000A;粗细" Visibility="Collapsed" Margin="0,10,0,0"
+                           FontSize="14" HorizontalAlignment="Center"
+                           Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
+
+
+                    <Button Name="BtnClearAndHideCanvas" Content="清屏&#x000A;&amp;&#x000A;隐藏" Visibility="Collapsed" FontFamily="Microsoft YaHei UI"
+                        Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}" Block.TextAlignment="Center"
+                        Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
+                    <Grid Name="GridForLeftSideReservedSpace" Height="{Binding ElementName=StackPanelInfo, Path=ActualHeight}"/>
+
+                    <StackPanel Name="StackPanelColors" Margin="7,0,7,0">
+                        <Button Name="BtnColorBlack" FontFamily="Microsoft YaHei UI" Background="Black"
+                                Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Height="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Click="BtnColorBlack_Click">
+                            <Viewbox Name="ViewboxBtnColorBlackContent" Visibility="Collapsed">
+                                <ui:SymbolIcon Symbol="Accept" Name="SymbolIconBtnColorBlackContent" Foreground="White"/>
+                            </Viewbox>
+                        </Button>
+                        <Button Name="BtnColorRed" FontFamily="Microsoft YaHei UI" Background="Red"
+                                Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Height="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Click="BtnColorRed_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}">
+                            <Viewbox Name="ViewboxBtnColorRedContent">
+                                <ui:SymbolIcon Symbol="Accept" Foreground="{Binding ElementName=SymbolIconBtnColorBlackContent, Path=Foreground}"/>
+                            </Viewbox>
+                        </Button>
+                        <Button Name="BtnColorGreen" FontFamily="Microsoft YaHei UI" Background="#169141"
+                                Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Height="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Click="BtnColorGreen_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}">
+                            <Viewbox Name="ViewboxBtnColorGreenContent" Visibility="Collapsed">
+                                <ui:SymbolIcon Symbol="Accept" Foreground="{Binding ElementName=SymbolIconBtnColorBlackContent, Path=Foreground}"/>
+                            </Viewbox>
+                        </Button>
+                        <Button Name="BtnColorBlue" FontFamily="Microsoft YaHei UI" Background="#239AD6"
+                                Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Height="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Click="BtnColorBlue_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}">
+                            <Viewbox Name="ViewboxBtnColorBlueContent" Visibility="Collapsed">
+                                <ui:SymbolIcon Symbol="Accept" Foreground="{Binding ElementName=SymbolIconBtnColorBlackContent, Path=Foreground}"/>
+                            </Viewbox>
+                        </Button>
+                        <Button Name="BtnColorYellow" FontFamily="Microsoft YaHei UI" Background="#F38B00"
+                                Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Height="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Click="BtnColorYellow_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}">
+                            <Viewbox Name="ViewboxBtnColorYellowContent" Visibility="Collapsed">
+                                <ui:SymbolIcon Symbol="Accept" Foreground="{Binding ElementName=SymbolIconBtnColorBlackContent, Path=Foreground}"/>
+                            </Viewbox>
+                        </Button>
+                    </StackPanel>
+                    <Button x:Name="BtnHideInkCanvas" Content="隐藏&#x000A;画板" FontFamily="Microsoft YaHei UI"
+                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                            Click="BtnHideInkCanvas_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
+                   
+                    <Button x:Name="BtnCheckPPT" Visibility="Collapsed" Content="检查" FontFamily="Microsoft YaHei UI"
+                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                            Click="BtnCheckPPT_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
+                    <StackPanel Name="StackPanelPPTButtons">
+                        <Button x:Name="BtnPPTSlideShow" Visibility="Collapsed" Content="从头&#x000A;放映" FontFamily="Microsoft YaHei UI"
+                                Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                                Click="BtnPPTSlideShow_Click"  Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
+                        <Button x:Name="BtnPPTSlideShowEnd" Visibility="Collapsed" Content="结束&#x000A;放映" FontFamily="Microsoft YaHei UI"
+                                Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                                Click="BtnPPTSlideShowEnd_Click"  Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
+                        <StackPanel Name="StackPanelPPTControls" Visibility="Collapsed">
+                            <Button x:Name="BtnPPTSlidesUp" Content="↑" FontFamily="Microsoft YaHei UI"
+                                    Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                                    Click="BtnPPTSlidesUp_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
+                            <Button x:Name="BtnPPTSlidesDown" Content="↓" FontFamily="Microsoft YaHei UI"
+                                    Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                                    Click="BtnPPTSlidesDown_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+
+            </StackPanel>
+        </Viewbox>
+
+
+
+        <Viewbox Name="LeftPPTSwitchPanel" Margin="10,0,0,0" Width="46" VerticalAlignment="Center" Visibility="Visible" HorizontalAlignment="Left">
+
+            <StackPanel Visibility="Visible" Width="46">
+
+                <Button Content="↑" FontFamily="Microsoft YaHei UI"
+                            Margin="0,10,0,0" Width="46" Height="46" FontSize="20"
+                            Click="BtnPPTSlidesUp_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="#7F909090"/>
+                <Button Content="↓" FontFamily="Microsoft YaHei UI" FontSize="20"
+                            Margin="0,10,0,15" Width="46" Height="46"
+                            Click="BtnPPTSlidesDown_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="#7F909090"/>
+
+
+                <Button Name="Btnquit" Content="退出" FontFamily="Microsoft YaHei UI"
+     Margin="0,10,0,0" Width="46"
+    Click="BtnPPTSlideShowEnd_Click" Background="#7F909090"/>
+
+            </StackPanel>
+        </Viewbox>
+
+
+        <Viewbox Name="RightPPTSwitchPanel" Margin="0,0,10,0" Width="46" VerticalAlignment="Center" Visibility="Visible" HorizontalAlignment="Right">
+
+            <StackPanel Visibility="Visible" Width="46">
+
+                <Button Content="↑" FontFamily="Microsoft YaHei UI"
+                        Margin="0,10,0,0" Width="46" Height="46" FontSize="20"
+                        Click="BtnPPTSlidesUp_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="#7F909090"/>
+                <Button Content="↓" FontFamily="Microsoft YaHei UI" FontSize="20"
+                        Margin="0,10,0,15" Width="46" Height="46"
+                        Click="BtnPPTSlidesDown_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="#7F909090"/>
+
+
+                <Button Content="退出" FontFamily="Microsoft YaHei UI"
+ Margin="0,10,0,0" Width="46"
+Click="BtnPPTSlideShowEnd_Click" Background="#7F909090"/>
+
+            </StackPanel>
+        </Viewbox>
+
+
+        <Grid Name="GridForRecoverOldUI">
+            <Grid Visibility="{Binding ElementName=StackPanelPPTControls, Path=Visibility}">
+                <Viewbox Name="ViewboxPPTSidesControl" Visibility="{Binding ElementName=StackPanelPPTButtons, Path=Visibility}" Opacity="0.7" Margin="10" Height="50" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+                    <ui:SimpleStackPanel Orientation="Horizontal" Spacing="5">
+                        <Border Width="36" MouseUp="GridPPTControlPrevious_MouseUp" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                            <Grid Margin="6">
+                                <Image Name="ImagePPTControlPreviousPressed" Visibility="Collapsed" Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideSelected}"/>
+                                <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
+                            </Grid>
+                        </Border>
+                        <Border x:Name="PptNavigationBtn" Width="36" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                            <Grid MouseUp="PPTNavigationBtn_Click">
+                                <TextBlock Name="PptNavigationTextBlock" FontSize="10" Foreground="{DynamicResource ToolBarForeground}" HorizontalAlignment="Center" VerticalAlignment="Center" Text="0/0" />
+                            </Grid>
+                        </Border>
+                        <Border Width="36" MouseUp="GridPPTControlNext_MouseUp" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                            <Grid Margin="6">
+                                <Image Name="ImagePPTControlNextPressed" Visibility="Collapsed" Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalNextSlideSelected}"/>
+                                <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalNextSlideNormal}"/>
+                            </Grid>
+                        </Border>
+                    </ui:SimpleStackPanel>
+                </Viewbox>
+                <Viewbox Visibility="{Binding ElementName=StackPanelPPTButtons, Path=Visibility}" Opacity="{Binding ElementName=ViewboxPPTSidesControl, Path=Opacity}" Margin="10" Height="50" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                    <ui:SimpleStackPanel Orientation="Horizontal" Spacing="5">
+                        <Border Width="36" MouseUp="GridPPTControlPrevious_MouseUp" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                            <Grid Margin="6">
+                                <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
+                            </Grid>
+                        </Border>
+                        <Border Width="36" Visibility="{Binding ElementName=PptNavigationBtn, Path=Visibility}" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                            <Grid MouseUp="PPTNavigationBtn_Click">
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding ElementName=PptNavigationTextBlock, Path=Foreground}" FontSize="{Binding ElementName=PptNavigationTextBlock, Path=FontSize}" Text="{Binding ElementName=PptNavigationTextBlock, Path=Text}" />
+                            </Grid>
+                        </Border>
+                        <Border Width="36" MouseUp="GridPPTControlNext_MouseUp" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                            <Grid Margin="6">
+                                <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalNextSlideNormal}"/>
+                            </Grid>
+                        </Border>
+                    </ui:SimpleStackPanel>
+                </Viewbox>
+            </Grid>
+        </Grid>
+
+        <Viewbox Name="ViewboxFloatingBar" Margin="100,10,-2000,-200" 
+                 HorizontalAlignment="Left" Height="50" VerticalAlignment="Top">
+            <Viewbox.LayoutTransform>
+                <ScaleTransform x:Name="ViewboxFloatingBarScaleTransform" ScaleX="1" ScaleY="1"/>
+            </Viewbox.LayoutTransform>
+            <ui:SimpleStackPanel Orientation="Horizontal">
+                <Border Width="36" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}" MouseDown="SymbolIconEmoji_MouseDown" MouseUp="SymbolIconEmoji_MouseUp">
+                    <ui:SimpleStackPanel Margin="0,5,0,5" Spacing="10" Orientation="Horizontal"
+                                         HorizontalAlignment="Center">
+                        <ui:SymbolIcon Name="SymbolIconEmoji" Symbol="Emoji2" Foreground="{DynamicResource ToolBarForeground}"/>
+                    </ui:SimpleStackPanel>
+                </Border>
+                <Border Margin="5,0,0,0" Visibility="Visible" Height="36" Name="BorderFloatingBarMainControls" Background="{DynamicResource ToolBarBackground}" CornerRadius="5" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                    <ui:SimpleStackPanel Name="StackPanelFloatingBar" Spacing="10" Orientation="Horizontal">
+                        <ui:SimpleStackPanel Name="StackPanelCanvacMain" Margin="10,5,0,5" Spacing="10" Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}">
+                            <Grid Height="24" Width="0">
+                            </Grid>
+                            <local:ClickSensitiveGrid Click="SymbolIconCursor_Click" Margin="-10,0,0,0">
+                                <ui:SymbolIcon Symbol="Edit" Foreground="{DynamicResource ToolBarForeground}"/>
+                            </local:ClickSensitiveGrid>
+                            
+                        </ui:SimpleStackPanel>
+                        <ui:SimpleStackPanel Name="StackPanelCanvasControls" Visibility="Visible" Margin="10,5,0,5" Spacing="10" Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}">
+                            <local:ClickSensitiveGrid Click="SymbolIconCursor_Click">
+                                <ui:SymbolIcon Symbol="TouchPointer" Foreground="{DynamicResource ToolBarForeground}"/>
+                            </local:ClickSensitiveGrid>
+                            <ui:SimpleStackPanel Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}" Spacing="8" Margin="0,1">
+                                <Border Name="BorderPenColorBlack" Background="{Binding ElementName=BtnColorBlack, Path=Background}" MouseUp="BorderPenColorBlack_MouseUp" CornerRadius="100"
+                                    Width="{Binding ElementName=BorderPenColorBlack, Path=ActualHeight}">
+                                    <Viewbox Visibility="{Binding ElementName=ViewboxBtnColorBlackContent, Path=Visibility}" Margin="6">
+                                        <ui:SymbolIcon Symbol="Accept" Foreground="White"/>
+                                    </Viewbox>
+                                </Border>
+                                <Border Name="BorderPenColorRed" Background="{Binding ElementName=BtnColorRed, Path=Background}" MouseUp="BorderPenColorRed_MouseUp" CornerRadius="100"
+                                    Width="{Binding ElementName=BorderPenColorRed, Path=ActualHeight}">
+                                    <Viewbox Visibility="{Binding ElementName=ViewboxBtnColorRedContent, Path=Visibility}" Margin="6">
+                                        <ui:SymbolIcon Symbol="Accept" Foreground="White"/>
+                                    </Viewbox>
+                                </Border>
+                                <Border Name="BorderPenColorGreen" Background="{Binding ElementName=BtnColorGreen, Path=Background}" MouseUp="BorderPenColorGreen_MouseUp" CornerRadius="100"
+                                    Width="{Binding ElementName=BorderPenColorGreen, Path=ActualHeight}">
+                                    <Viewbox Visibility="{Binding ElementName=ViewboxBtnColorGreenContent, Path=Visibility}" Margin="6">
+                                        <ui:SymbolIcon Symbol="Accept" Foreground="White"/>
+                                    </Viewbox>
+                                </Border>
+                                <Border Name="BorderPenColorBlue" Background="{Binding ElementName=BtnColorBlue, Path=Background}" MouseUp="BorderPenColorBlue_MouseUp" CornerRadius="100"
+                                    Width="{Binding ElementName=BorderPenColorBlue, Path=ActualHeight}">
+                                    <Viewbox Visibility="{Binding ElementName=ViewboxBtnColorBlueContent, Path=Visibility}" Margin="6">
+                                        <ui:SymbolIcon Symbol="Accept" Foreground="White"/>
+                                    </Viewbox>
+                                </Border>
+                                <Border Name="BorderPenColorYellow" Background="{Binding ElementName=BtnColorYellow, Path=Background}" MouseUp="BorderPenColorYellow_MouseUp" CornerRadius="100"
+                                    Width="{Binding ElementName=BorderPenColorYellow, Path=ActualHeight}">
+                                    <Viewbox Visibility="{Binding ElementName=ViewboxBtnColorYellowContent, Path=Visibility}" Margin="6">
+                                        <ui:SymbolIcon Symbol="Accept" Foreground="White"/>
+                                    </Viewbox>
+                                </Border>
+                                <Border Name="BorderPenColorWhite" Background="White" CornerRadius="100" MouseUp="BorderPenColorWhite_MouseUp"
+                                    Width="{Binding ElementName=BorderPenColorYellow, Path=ActualHeight}">
+                                    <Viewbox Name="ViewboxBtnColorWhiteContent" Visibility="Collapsed" Margin="6">
+                                        <ui:SymbolIcon Symbol="Accept" Foreground="Black"/>
+                                    </Viewbox>
+                                </Border>
+                            </ui:SimpleStackPanel>
+                            <Grid x:Name="EraserContainer" Width="21" Height="24" Margin="0,1.5,-2,0" MouseUp="ImageEraser_MouseUp" Visibility="{Binding ElementName=BtnErase, Path=Visibility}">
+                                <Image Name="ImageEraser" Margin="0,-4,-1,-2" Source="{DynamicResource ImageSource.RubberNormal}" RenderTransformOrigin="0.5,0.5"/>
+                                <Image Name="ImageEraserMask" Visibility="{Binding Visibility, ElementName=ImageEraser, Converter={StaticResource VisibilityConverter}}" Margin="0,-2.5,0,0" RenderTransformOrigin="0.5,0.5">
+                                    <Image.Source>
+                                        <DrawingImage>
+                                            <DrawingImage.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing>
+                                                            <GeometryDrawing.Brush>
+                                                                <SolidColorBrush
+								                                    Color="#FFD8D8D8"
+								                                    Opacity="0" />
+                                                            </GeometryDrawing.Brush>
+                                                            <GeometryDrawing.Pen>
+                                                                <Pen
+								                                    Thickness="1"
+								                                    StartLineCap="Flat"
+								                                    EndLineCap="Flat"
+								                                    LineJoin="Miter">
+                                                                    <Pen.Brush>
+                                                                        <SolidColorBrush
+										                                    Color="#FF979797"
+										                                    Opacity="0" />
+                                                                    </Pen.Brush>
+                                                                </Pen>
+                                                            </GeometryDrawing.Pen>
+                                                            <GeometryDrawing.Geometry>
+                                                                <PathGeometry
+								                                    FillRule="EvenOdd"
+								                                    Figures="M31,31L32,31 32,32 31,32 31,31z M0,0L1,0 1,1 0,1 0,0z" />
+                                                            </GeometryDrawing.Geometry>
+                                                        </GeometryDrawing>
+                                                        <DrawingGroup
+						                                    Transform="-0.707106781186548,-0.707106781186547,-0.707106781186547,0.707106781186548,31.4055917955108,13.0208154846605">
+                                                            <DrawingGroup.Children>
+                                                                <GeometryDrawing x:Name="GeometryDrawingEraser"
+								                                    Brush="#FF666666">
+                                                                    <GeometryDrawing.Geometry>
+                                                                        <PathGeometry
+										                                    FillRule="EvenOdd"
+										                                    Figures="M16.7928932,16.2426407L16.7928932,0.788350252C16.7928932,0.248156103,16.3447877,-0.207106781,15.7920216,-0.207106781L1.79376488,-0.207106781C1.23752408,-0.207106781,0.792893219,0.238574513,0.792893219,0.788350252L0.792893219,16.2426407 16.7928932,16.2426407z M16.7928932,18.2426407L16.7928932,23.7974362C16.7928932,24.3472119,16.3482624,24.7928932,15.7920216,24.7928932L1.79376488,24.7928932C1.24099872,24.7928932,0.792893219,24.3376303,0.792893219,23.7974362L0.792893219,18.2426407 16.7928932,18.2426407z" />
+                                                                    </GeometryDrawing.Geometry>
+                                                                </GeometryDrawing>
+                                                            </DrawingGroup.Children>
+                                                        </DrawingGroup>
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingImage.Drawing>
+                                        </DrawingImage>
+                                    </Image.Source>
+                                </Image>
+                            </Grid>
+
+
+                        </ui:SimpleStackPanel>
+                        <Grid Margin="0,0,0,0" Width="20">
+                            <ui:SymbolIcon Name="SymbolIconDelete" Symbol="Delete" Foreground="{DynamicResource ToolBarForeground}" 
+           MouseUp="SymbolIconDelete_MouseUp"/>
+                          
+                        </Grid>
+                        <ui:SimpleStackPanel Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}">
+                            <Grid Margin="0,5,0,5" Visibility="{Binding ElementName=StackPanelPPTButtons, Path=Visibility}">
+                                <Image Source="{DynamicResource ResourceKey=SeewoImageSource.PPTExitNormal}" Visibility="{Binding ElementName=BtnPPTSlideShowEnd, Path=Visibility}" MouseUp="ImagePPTControlEnd_MouseUp" Margin="-2,1,10,2"/>
+                            </Grid>
+
+                            <ui:SimpleStackPanel Margin="0,5,10,5" Spacing="10" Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}">
+                                <ui:SymbolIcon Margin="0,0,0,0" Symbol="Camera" Foreground="{DynamicResource ToolBarForeground}" MouseUp="SymbolIconScreenshot_MouseUp"/>
+                                <Grid Height="24" Width="20">
+                                    <ui:SymbolIcon Symbol="Repair" Foreground="{DynamicResource ToolBarForeground}" MouseUp="SymbolIconTools_MouseUp"/>
+                                    <Border Name="BorderTools" Margin="37,-87,-140,-6" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                                        <ui:SimpleStackPanel>
+                                            <Label Content="设置" FontSize="14" Foreground="{DynamicResource ToolBarForeground}"
+                                                   HorizontalAlignment="Left" Margin="5,8"/>
+
+                                            <Label Margin="8,0,0,-3" Content="画笔粗细" Foreground="{DynamicResource ToolBarForeground}" FontSize="12" VerticalAlignment="Center"/>
+
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+
+                                                <Slider x:Name="InkWidthSlider"
+             HorizontalAlignment="Center"
+             Minimum="2" Maximum="8"
+             Width="90" FontFamily="Microsoft YaHei UI" FontSize="10"
+             
+             IsSnapToTickEnabled="True" Value="5"
+            
+             ValueChanged="InkWidthSlider_ValueChanged"/>
+                                                <TextBlock Text="{Binding Value, ElementName=InkWidthSlider, Mode=OneWay}" Foreground="{DynamicResource ToolBarForeground}"
+                VerticalAlignment="Bottom" Margin="8,0,0,8"
+                FontSize="12"/>
+                                            </StackPanel>
+
+
+                                            <Viewbox Margin="8,0,0,0" Height="32" Width="50" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                                <ui:SimpleStackPanel>
+                                                    <Label Margin="0,0,0,-2" Content="画笔光标" Foreground="{DynamicResource ToolBarForeground}" FontSize="13" VerticalAlignment="Center"/>
+                                                    <Viewbox Height="25">
+                                                        <ui:ToggleSwitch IsOn="False" FontFamily="Microsoft YaHei UI" Toggled="ToggleSwitchShowCursor_Toggled" Name="ToggleSwitchShowCursor" Foreground="{DynamicResource ToolBarForeground}" OnContent="开" OffContent="关" Width="70"/>
+
+                                                    </Viewbox>
+                                                </ui:SimpleStackPanel>
+                                            </Viewbox>
+
+                                            <Viewbox x:Name="viewbox" Margin="0,-26,37,0" Height="26" VerticalAlignment="Top" HorizontalAlignment="Right">
+                                                <ui:SimpleStackPanel Height="22" Width="23" VerticalAlignment="Center" HorizontalAlignment="Center" >
+                                                    <ui:SymbolIcon x:Name="symbolIcon" Symbol="Help" Foreground="{DynamicResource ToolBarForeground}" MouseDown="MoreInfo_MouseDown"/>
+
+                                                </ui:SimpleStackPanel>
+
+                                            </Viewbox>
+
+                                            <Viewbox x:Name="viewbox1" Margin="0,-26,5,0" Height="26" VerticalAlignment="Top" HorizontalAlignment="Right">
+                                                <ui:SimpleStackPanel Height="22" Width="23" VerticalAlignment="Center" HorizontalAlignment="Center" >
+                                                    <ui:SymbolIcon Symbol="Cancel" Foreground="{DynamicResource ToolBarForeground}" MouseDown="BtnExit_Click"/>
+
+                                                </ui:SimpleStackPanel>
+
+                                            </Viewbox>
+                                        </ui:SimpleStackPanel>
+                                    </Border>
+                                </Grid>
+                            </ui:SimpleStackPanel>
+                        </ui:SimpleStackPanel>
+                    </ui:SimpleStackPanel>
+                </Border>
+            </ui:SimpleStackPanel>
+        </Viewbox>
+        <Grid Name="GridForFloatingBarDraging" Background="#01000000" Visibility="Collapsed"
+              MouseMove="SymbolIconEmoji_MouseMove" MouseUp="SymbolIconEmoji_MouseUp"/>
+    </Grid>
+</Window>
