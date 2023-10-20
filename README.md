@@ -1,5 +1,4 @@
-<div align="center">
-[![LOGO](Ink%20Canvas/Resources/InkCanvas.png?raw=true "LOGO")](# "LOGO")
+
 
 # PowerCanvas
 
