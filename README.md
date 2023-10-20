@@ -9,7 +9,7 @@
 ## 📗 说明
 0.本项目仍在优化。本项目图标预计会在年底更换。
 
-1.PowerCanvas是由WXRIW开发的”Ink Canvas“修改而来。原开源仓库地址：[https://github.com/WXRIW/Ink-Canvas]: https://github.com/WXRIW/Ink-Canvas
+1.PowerCanvas是由WXRIW开发的”Ink Canvas“修改而来。原开源仓库地址：https://github.com/WXRIW/Ink-Canvas
 
 2.PowerCanvas对Ink Canvas进行了代码功能的调整和精简。目的在于将软件功能定位专注于优化PowerPoint的墨迹操作。因此对代码删减较多，包括但不限于：移除了图形、撤销、白板、计时器、抽奖等功能；添加了PPT放映时的侧边栏切换按钮等。用户在使用PowerCanvas时需已知该程序是由Ink Canvas修改而来，且功能进行了修改。
 
